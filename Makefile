@@ -7,7 +7,7 @@ SRCS = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 # all the object files in OBJDIR are needed to create the executable
-recognition: $(OBJS)
+digit-recognition: $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 # compile the source files into object files

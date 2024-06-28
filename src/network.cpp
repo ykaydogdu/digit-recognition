@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #include <iostream>
 #include <chrono>
+#include <sstream>
 
 double sigmoid(double z) { return 1 / (1 + exp(-z));};
 double sigmoid_prime(double z) { return sigmoid(z) * (1 - sigmoid(z));};
@@ -23,6 +24,90 @@ Network::Network(int* sizes, int n)
         biases[l] = ygzVector<double>::randn(sizes[l]);
         weights[l] = ygzMatrix<double>::randn(sizes[l], sizes[l - 1]);  
     }
+}
+
+Network::Network(std::ifstream &weightsFile, std::ifstream &biasesFile)
+{
+    weightsFile >> numLayers;
+    sizes = new int[numLayers];
+    for (int i = 0; i < numLayers; i++)
+    {
+        weightsFile >> sizes[i];
+    }
+
+    // check for biases and weights file mismatch
+    int x;
+    biasesFile >> x;
+    int* biasSizes = new int[x];
+    for (int i = 0; i < x; i++)
+    {
+        biasesFile >> biasSizes[i];
+    }
+    if (x != numLayers)
+    {
+        throw std::invalid_argument("Biases file and weights file mismatch\n");
+        return;
+    }
+    bool control = true;
+    for (int i = 0; i < numLayers; i++)
+    {
+        if (sizes[i] != biasSizes[i])
+        {
+            control = false;
+            break;
+        }
+    }
+    if (!control)
+    {
+        throw std::invalid_argument("Biases file and weights file mismatch\n");
+        return;
+    }
+    delete[] biasSizes;
+
+
+    biases = new ygzVector<double>[numLayers];
+    weights = new ygzMatrix<double>[numLayers];
+
+    biases[0] = ygzVector<double>(sizes[0]); // not used
+    weights[0] = ygzMatrix<double>(sizes[1], sizes[0]); // not used
+    std::string row, el;
+    getline(biasesFile, row); // skip the first line (sizes of the layers)
+    getline(weightsFile, row); // skip the first line (sizes of the layers)
+    for (int l = 1; l < numLayers; l++)
+    {
+        // bias read
+        double* biasArr = new double[sizes[l]];
+        row.clear();
+        getline(biasesFile, row);
+        std::stringstream ss(row);
+        int i = 0;
+        while (getline(ss, el, ','))
+        {
+            biasArr[i++] = std::stod(el);
+        }
+        biases[l] = ygzVector<double>(sizes[l], biasArr);
+        delete[] biasArr;
+
+        // weight read
+        double* weightArr = new double[sizes[l] * sizes[l - 1]];
+        for (int i = 0; i < sizes[l]; i++)
+        {
+            row.clear();
+            getline(weightsFile, row);
+            std::stringstream ss(row);
+            int j = 0;
+            while (getline(ss, el, ','))
+            {
+                weightArr[i * sizes[l - 1] + j] = std::stod(el);
+                j++;
+            }
+        }
+        weights[l] = ygzMatrix<double>(sizes[l], sizes[l - 1], weightArr);
+        delete[] weightArr;
+    }
+
+    weightsFile.close();
+    biasesFile.close();
 }
 
 ygzVector<double> Network::feedforward(ygzVector<double> a)
@@ -211,7 +296,7 @@ void Network::saveWeights(std::string filename)
         file << sizes[i] << " ";
     }
     file << sizes[numLayers - 1] << "\n";
-    for (int i = 0; i < numLayers; i++)
+    for (int i = 1; i < numLayers; i++)
     {
         file << weights[i].toCSV();
     }
