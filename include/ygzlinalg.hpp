@@ -150,7 +150,7 @@ public:
     std::string toCSV() const;
 
 private:
-    size_t sub2Ind(size_t r, size_t c) const;
+    size_t sub2Ind(uint r, uint c) const;
     bool isSquare() const;
     bool closeEnough(T a, T b, double tolerance = TOLERANCE) const;
 
@@ -867,7 +867,7 @@ ygzMatrix<T> ygzMatrix<T>::identity(size_t n)
     T* data = new T[n * n];
     for (uint i = 0; i < n; i++)
     {
-        for (size_t j = 0; j < n; j++)
+        for (uint j = 0; j < n; j++)
             data[i * n + j] = i == j ? 1.0 : 0.0;
     }
 
@@ -906,9 +906,9 @@ void ygzMatrix<T>::setToIdentity()
     if (!isSquare())
         throw std::invalid_argument("Matrix must be square to set to identity");
 
-    for (size_t row = 0; row < nRows; row++)
+    for (uint row = 0; row < nRows; row++)
     {
-        for (size_t col = 0; col < nCols; col++)
+        for (uint col = 0; col < nCols; col++)
         {
             setElement(row, col, row == col ? 1.0 : 0.0);
         }
@@ -920,7 +920,7 @@ void ygzMatrix<T>::setToIdentity()
 /* ********************************************************************************************* */
 // Convert subscripts to linear index
 template <class T>
-size_t ygzMatrix<T>::sub2Ind(size_t r, size_t c) const
+size_t ygzMatrix<T>::sub2Ind(uint r, uint c) const
 {
     if (r < 0 || r >= nRows || c < 0 || c >= nCols)
         throw std::out_of_range("Index out of range");
@@ -1107,13 +1107,14 @@ ygzMatrix<T> operator*(const ygzMatrix<T> &lhs, const ygzMatrix<T> &rhs)
     T* result = new T[nRows * nCols]; // Resulting matrix has dimensions (lhs.nRows, rhs.nCols)
     for (uint i = 0; i < nRows; i++)
     {
-        for (size_t j = 0; j < nCols; j++)
+        for (uint j = 0; j < nCols; j++)
         {
             int index = i * nCols + j;
             result[index] = 0; // Initialize element to 0
-            for (size_t c = 0; c < lhs.nCols; c++) // for the ith row of the lhs
-                for (size_t r = 0; r < rhs.nCols; r++) // for the jth column of the rhs
-                    result[index] += lhs.getElement(i, c) * rhs.getElement(r, j); // Multiply and accumulate (dot product)
+            for (uint k = 0; k < lhs.nCols; k++)
+            {
+                result[index] += lhs.getElement(i, k) * rhs.getElement(k, j); // Multiply and accumulate (dot product)
+            }
         }
     }
 
@@ -1164,7 +1165,7 @@ ygzMatrix<T> ygzMatrix<T>::join(const ygzMatrix<T> &m)
     T* newData = new T[nRows * (nCols + m.nCols)];
     for (uint i = 0; i < nRows; i++)
     {
-        for (size_t j = 0; j < (nCols + m.nCols); j++)
+        for (uint j = 0; j < (nCols + m.nCols); j++)
         {
             int index = i * (nCols + m.nCols) + j;
             if (j < nCols)
@@ -1191,9 +1192,9 @@ void ygzMatrix<T>::separate(ygzMatrix<T> *m1, ygzMatrix<T> *m2, int colNum) cons
 
     for (uint i = 0; i < nRows; i++)
     {
-        for (size_t j = 0; j < colNum; j++)
+        for (uint j = 0; j < colNum; j++)
             m1->setElement(i, j, getElement(i, j));
-        for (size_t j = 0; j < nCols - colNum; j++)
+        for (uint j = 0; j < nCols - colNum; j++)
             m2->setElement(i, j, getElement(i, colNum + j));
     }
 }
@@ -1207,7 +1208,7 @@ void ygzMatrix<T>::swapRow(int i, int j)
 {
     if (i == j)
         return;
-    for (size_t c = 0; c < nCols; c++)
+    for (uint c = 0; c < nCols; c++)
     {
         T temp = getElement(i, c);
         setElement(i, c, getElement(j, c));
@@ -1219,7 +1220,7 @@ void ygzMatrix<T>::swapRow(int i, int j)
 template <class T>
 void ygzMatrix<T>::multRow(int i, T factor)
 {
-    for (size_t c = 0; c < nCols; c++)
+    for (uint c = 0; c < nCols; c++)
         setElement(i, c, getElement(i, c) * factor);
 }
 
@@ -1227,7 +1228,7 @@ void ygzMatrix<T>::multRow(int i, T factor)
 template <class T>
 void ygzMatrix<T>::multAddRow(int i, int j, T factor)
 {
-    for (size_t c = 0; c < nCols; c++)
+    for (uint c = 0; c < nCols; c++)
         setElement(j, c, getElement(j, c) + factor * getElement(i, c));
 }
 
@@ -1286,7 +1287,7 @@ bool ygzMatrix<T>::inverseInPlace()
                 augmentedMatrix.multRow(cRow, 1 / augmentedMatrix.getElement(cRow, cCol)); // Divide the row by the diagonal element to make it 1
 
             // Now process the rows and columns
-            for (size_t r = cRow + 1; r < nRows; r++)
+            for (uint r = cRow + 1; r < nRows; r++)
             {
                 T currentElement = augmentedMatrix.getElement(r, cCol);
                 T diagElement = augmentedMatrix.getElement(cRow, cCol);
@@ -1296,7 +1297,7 @@ bool ygzMatrix<T>::inverseInPlace()
                 T factor = -(currentElement / diagElement);
                 augmentedMatrix.multAddRow(cRow, r, factor); // Make the elements below the diagonal element 0
             }
-            for (size_t c = cCol + 1; c < nCols; c++)
+            for (uint c = cCol + 1; c < nCols; c++)
             {
                 T currentElement = augmentedMatrix.getElement(cRow, c);
                 T diagElement = augmentedMatrix.getElement(cRow, cCol);
@@ -1315,7 +1316,7 @@ bool ygzMatrix<T>::inverseInPlace()
             // res is now the inverse of the original matrix
             for (uint i = 0; i < nRows; i++)
             {
-                for (size_t j = 0; j < nCols; j++)
+                for (uint j = 0; j < nCols; j++)
                     setElement(i, j, res->getElement(i, j));
             }
         }
@@ -1346,7 +1347,7 @@ ygzMatrix<T> ygzMatrix<T>::findMinor(int row, int col) const
     {
         if (i == row)
             continue;
-        for (size_t j = 0; j < nCols; j++)
+        for (uint j = 0; j < nCols; j++)
         {
             if (j == col)
                 continue;
@@ -1389,7 +1390,7 @@ bool ygzMatrix<T>::transposeInPlace()
     T* newData = new T[nElements];
     for (uint i = 0; i < nRows; i++)
     {
-        for (size_t j = 0; j < nCols; j++)
+        for (uint j = 0; j < nCols; j++)
             newData[j * nRows + i] = getElement(i, j);
     }
     delete[] data;
@@ -1407,7 +1408,7 @@ ygzMatrix<T> ygzMatrix<T>::transpose() const
     T* newData = new T[nElements];
     for (uint i = 0; i < nRows; i++)
     {
-        for (size_t j = 0; j < nCols; j++)
+        for (uint j = 0; j < nCols; j++)
             newData[j * nRows + i] = getElement(i, j);
     }
     ygzMatrix<T> transposedMatrix(nCols, nRows, newData);
@@ -1429,7 +1430,7 @@ ygzVector<T> operator*(const ygzMatrix<T> &matrix, const ygzVector<T> &vector)
     for (uint i = 0; i < matrix.nRows; i++)
     {
         result[i] = 0;
-        for (size_t j = 0; j < matrix.nCols; j++)
+        for (uint j = 0; j < matrix.nCols; j++)
             result[i] += matrix.getElement(i, j) * vector.getElement(j);
     }
 
@@ -1448,7 +1449,7 @@ ygzMatrix<T> operator*(const ygzVector<T> &vector, const ygzMatrix<T> &r_vector)
     T* result = new T[vector.getNumDims() * r_vector.getNumCols()];
     for (uint i = 0; i < vector.getNumDims(); i++)
     {
-        for (size_t j = 0; j < r_vector.getNumCols(); j++)
+        for (uint j = 0; j < r_vector.getNumCols(); j++)
             result[i * r_vector.getNumCols() + j] = vector.getElement(i) * r_vector.getElement(0, j);
     }
 
@@ -1487,7 +1488,7 @@ std::string ygzMatrix<T>::toString() const
     for (uint i = 0; i < nRows; i++)
     {
         result += "[";
-        for (size_t j = 0; j < nCols; j++)
+        for (uint j = 0; j < nCols; j++)
         {
             result += std::to_string(getElement(i, j));
             if (j < nCols - 1)
@@ -1508,7 +1509,7 @@ std::string ygzMatrix<T>::toCSV() const
     std::string result = "";
     for (uint i = 0; i < nRows; i++)
     {
-        for (size_t j = 0; j < nCols; j++)
+        for (uint j = 0; j < nCols; j++)
         {
             result += std::to_string(getElement(i, j));
             if (j < nCols - 1)
