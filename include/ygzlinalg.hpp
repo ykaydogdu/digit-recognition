@@ -9,6 +9,7 @@
 using std::vector;
 
 #define TOLERANCE 1e-5
+using uint = unsigned int;
 
 template <class T> class ygzVector;
 template <class T> class ygzMatrix;
@@ -191,7 +192,7 @@ template <class T>
 ygzVector<T>::ygzVector(size_t nDims) : nDims(nDims)
 {
     data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = 0.0;
     }
@@ -202,7 +203,7 @@ template <class T>
 ygzVector<T>::ygzVector(size_t nDims, const T *inputData) : nDims(nDims)
 {
     data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = inputData[i];
     }
@@ -213,7 +214,7 @@ template <class T>
 ygzVector<T>::ygzVector(vector<T> &inputData) : nDims(inputData.size())
 {
     data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = inputData.at(i);
     }
@@ -224,7 +225,7 @@ template <class T>
 ygzVector<T>::ygzVector(const ygzVector<T> &copyVector) : nDims(copyVector.nDims)
 {
     data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = copyVector.data[i];
     }
@@ -265,7 +266,7 @@ ygzVector<T>& ygzVector<T>::operator=(const ygzVector<T> &rhs)
         data = new T[nDims];
     }
 
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = rhs.data[i];
     }
@@ -301,13 +302,13 @@ size_t ygzVector<T>::getNumDims() const
 
 // Get the element at the specified index
 template <class T>
-T ygzVector<T>::getElement(size_t index) const
+T ygzVector<T>::getElement(uint index) const
 {
     if (index < 0)
     {
         throw std::invalid_argument("Index must be positive");
     }
-    size_t i = index;
+    uint i = index;
     if (i >= nDims)
     {
         throw std::invalid_argument("Index out of bounds");
@@ -317,7 +318,7 @@ T ygzVector<T>::getElement(size_t index) const
 
 // Set the element at the specified index to the given value
 template <class T>
-void ygzVector<T>::setElement(size_t index, T value)
+void ygzVector<T>::setElement(uint index, T value)
 {
     if (index < 0 || index >= nDims)
     {
@@ -337,7 +338,7 @@ unsigned int ygzVector<T>::argmax() const
 
     unsigned int maxIndex = 0;
     T maxValue = data[0];
-    for (size_t i = 1; i < nDims; i++)
+    for (uint i = 1; i < nDims; i++)
     {
         if (data[i] > maxValue)
         {
@@ -361,14 +362,14 @@ T ygzVector<T>::norm(int l) const
     T result = 0;
     if (l == 1)
     {
-        for (size_t i = 0; i < nDims; i++)
+        for (uint i = 0; i < nDims; i++)
         {
             result += fabs(data[i]);
         }
         return result;
     } else 
     {
-        for (size_t i = 0; i < nDims; i++)
+        for (uint i = 0; i < nDims; i++)
         {
             result += data[i] * data[i];
         }
@@ -400,7 +401,7 @@ void ygzVector<T>::normalize()
         throw std::invalid_argument("Cannot normalize a zero vector");
     }
 
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] /= n;
     }
@@ -416,7 +417,7 @@ bool ygzVector<T>::operator==(const ygzVector<T> &rhs) const
     if (nDims != rhs.nDims)
         return false;
 
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         // if (data[i] != rhs.data[i])
         if (!closeEnough(data[i], rhs.data[i]))
@@ -441,7 +442,7 @@ bool ygzVector<T>::compare(const ygzVector<T> & m2, double tolerance) const
         return false;
 
     double sum = 0.0;
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         sum += (data[i] - m2.data[i]) * (data[i] - m2.data[i]);
     }
@@ -470,7 +471,7 @@ ygzVector<T> ygzVector<T>::operator+(const ygzVector<T> &rhs) const
     ygzVector<T> result;
     result.nDims = nDims;
     result.data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         result.data[i] = data[i] + rhs.data[i];
     }
@@ -488,7 +489,7 @@ ygzVector<T> ygzVector<T>::operator-(const ygzVector<T> &rhs) const
     }
 
     T* resData = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         resData[i] = data[i] - rhs.data[i];
     }
@@ -502,7 +503,7 @@ template <class T>
 ygzVector<T> ygzVector<T>::operator*(const T &rhs) const
 {
     T* resultData = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         resultData[i] = data[i] * rhs;
     }
@@ -528,7 +529,7 @@ T ygzVector<T>::dotProduct(const ygzVector<T> &lhs, const ygzVector<T> &rhs)
     }
 
     T result = 0;
-    for (size_t i = 0; i < lhs.nDims; i++)
+    for (uint i = 0; i < lhs.nDims; i++)
     {
         result += lhs.data[i] * rhs.data[i];
     }
@@ -567,7 +568,7 @@ ygzVector<T> ygzVector<T>::hadamardProduct(const ygzVector<T> &lhs, const ygzVec
     ygzVector<T> result;
     result.nDims = lhs.nDims;
     result.data = new T[lhs.nDims];
-    for (size_t i = 0; i < lhs.nDims; i++)
+    for (uint i = 0; i < lhs.nDims; i++)
     {
         result.data[i] = lhs.data[i] * rhs.data[i];
     }
@@ -583,7 +584,7 @@ template <class T>
 ygzVector<T> ygzVector<T>::map(T (*f)(T)) const
 {
     T* resultData = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         resultData[i] = f(data[i]);
     }
@@ -596,7 +597,7 @@ ygzVector<T> ygzVector<T>::map(T (*f)(T)) const
 template <class T>
 void ygzVector<T>::mapInPlace(T (*f)(T))
 {
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = f(data[i]);
     }
@@ -613,14 +614,14 @@ ygzMatrix<T> ygzVector<T>::toMatrix(bool columnVector) const
     if (columnVector)
     {
         result = ygzMatrix<T>(nDims, 1);
-        for (size_t i = 0; i < nDims; i++)
+        for (uint i = 0; i < nDims; i++)
         {
             result.setElement(i, 0, data[i]);
         }
     } else 
     {
         result = ygzMatrix<T>(1, nDims);
-        for (size_t i = 0; i < nDims; i++)
+        for (uint i = 0; i < nDims; i++)
         {
             result.setElement(0, i, data[i]);
         }
@@ -637,7 +638,7 @@ template <class T>
 ygzVector<T> ygzVector<T>::random(size_t nDims)
 {
     T* data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         data[i] = static_cast<T>(rand()) / RAND_MAX;
     }
@@ -651,7 +652,7 @@ template <class T>
 ygzVector<T> ygzVector<T>::randn(size_t nDims)
 {
     T* data = new T[nDims];
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         double u1 = static_cast<double>(rand()) / RAND_MAX;
         double u2 = static_cast<double>(rand()) / RAND_MAX;
@@ -670,7 +671,7 @@ template <class T>
 std::string ygzVector<T>::toString() const
 {
     std::string result = "[";
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         result += std::to_string(data[i]);
         if (i < nDims - 1)
@@ -687,7 +688,7 @@ template <class T>
 std::string ygzVector<T>::toCSV() const
 {
     std::string result = "";
-    for (size_t i = 0; i < nDims; i++)
+    for (uint i = 0; i < nDims; i++)
     {
         result += std::to_string(data[i]);
         if (i < nDims - 1)
@@ -722,7 +723,7 @@ ygzMatrix<T>::ygzMatrix(size_t nRows, size_t nCols)
     this->nCols = nCols;
     nElements = nRows * nCols;
     data = new T[nElements];
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
         data[i] = 0.0; // Initialize elements with default value
 }
 
@@ -734,7 +735,7 @@ ygzMatrix<T>::ygzMatrix(size_t nRows, size_t nCols, const T* inputData)
     this->nCols = nCols;
     nElements = nRows * nCols;
     data = new T[nElements];
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
         data[i] = inputData[i];
 }
 
@@ -746,7 +747,7 @@ ygzMatrix<T>::ygzMatrix(size_t nRows, size_t nCols, const vector<T> *inputData)
     this->nCols = nCols;
     nElements = nRows * nCols;
     data = new T[nElements];
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
         data[i] = inputData->at(i);
 }
 
@@ -758,7 +759,7 @@ ygzMatrix<T>::ygzMatrix(const ygzMatrix<T> &copyMatrix)
     nCols = copyMatrix.nCols;
     nElements = nRows * nCols;
     data = new T[nElements];
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
         data[i] = copyMatrix.data[i];
 }
 
@@ -798,7 +799,7 @@ ygzMatrix<T>& ygzMatrix<T>::operator=(const ygzMatrix<T> &rhs)
         data = new T[nElements];
     }
 
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
     {
         data[i] = rhs.data[i];
     }
@@ -834,7 +835,7 @@ template <class T>
 ygzMatrix<T> ygzMatrix<T>::random(size_t nRows, size_t nCols)
 {
     T* data = new T[nRows * nCols];
-    for (size_t i = 0; i < nRows * nCols; i++)
+    for (uint i = 0; i < nRows * nCols; i++)
         data[i] = static_cast<T>(rand()) / RAND_MAX; // Random value between 0 and 1
 
     ygzMatrix<T> randomMatrix(nRows, nCols, data);
@@ -847,7 +848,7 @@ template <class T>
 ygzMatrix<T> ygzMatrix<T>::randn(size_t nRows, size_t nCols)
 {
     T* data = new T[nRows * nCols];
-    for (size_t i = 0; i < nRows * nCols; i++)
+    for (uint i = 0; i < nRows * nCols; i++)
     {
         double u1 = static_cast<double>(rand()) / RAND_MAX;
         double u2 = static_cast<double>(rand()) / RAND_MAX;
@@ -864,7 +865,7 @@ template <class T>
 ygzMatrix<T> ygzMatrix<T>::identity(size_t n)
 {
     T* data = new T[n * n];
-    for (size_t i = 0; i < n; i++)
+    for (uint i = 0; i < n; i++)
     {
         for (size_t j = 0; j < n; j++)
             data[i * n + j] = i == j ? 1.0 : 0.0;
@@ -892,7 +893,7 @@ bool ygzMatrix<T>::resize(size_t nRows, size_t nCols)
     data = new T[nElements];
     if (data == nullptr)
         return false;
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
         data[i] = 0.0; // Initialize elements with default value
 
     return true;
@@ -974,7 +975,7 @@ bool ygzMatrix<T>::operator==(const ygzMatrix<T> &rhs) const
     if (nRows != rhs.nRows || nCols != rhs.nCols)
         return false;
 
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
     {
         // if (data[i] != rhs.data[i])
         if (!closeEnough(data[i], rhs.data[i]))
@@ -999,7 +1000,7 @@ bool ygzMatrix<T>::compare(const ygzMatrix<T> & m2, double tolerance) const
         return false;
 
     double sum = 0.0;
-    for (size_t i = 0; i < nElements; i++)
+    for (uint i = 0; i < nElements; i++)
     {
         sum += (data[i] - m2.data[i]) * (data[i] - m2.data[i]);
     }
@@ -1024,7 +1025,7 @@ ygzMatrix<T> operator+(const ygzMatrix<T> &lhs, const ygzMatrix<T> &rhs)
         throw std::invalid_argument("Matrices must have the same dimensions");
 
     T* result = new T[lhs.nElements];
-    for (size_t i = 0; i < lhs.nElements; i++)
+    for (uint i = 0; i < lhs.nElements; i++)
         result[i] = lhs.data[i] + rhs.data[i];
 
     ygzMatrix<T> resultMatrix(lhs.nRows, lhs.nCols, result);
@@ -1037,7 +1038,7 @@ template <class T>
 ygzMatrix<T> operator+(const ygzMatrix<T> &matrix, const T &scalar)
 {
     T* result = new T[matrix.nElements];
-    for (size_t i = 0; i < matrix.nElements; i++)
+    for (uint i = 0; i < matrix.nElements; i++)
         result[i] = matrix.data[i] + scalar;
 
     ygzMatrix<T> resultMatrix(matrix.nRows, matrix.nCols, result);
@@ -1060,7 +1061,7 @@ ygzMatrix<T> operator-(const ygzMatrix<T> &lhs, const ygzMatrix<T> &rhs)
         throw std::invalid_argument("Matrices must have the same dimensions");
 
     T* result = new T[lhs.nElements];
-    for (size_t i = 0; i < lhs.nElements; i++)
+    for (uint i = 0; i < lhs.nElements; i++)
         result[i] = lhs.data[i] - rhs.data[i];
 
     ygzMatrix<T> resultMatrix(lhs.nRows, lhs.nCols, result);
@@ -1073,7 +1074,7 @@ template <class T>
 ygzMatrix<T> operator-(const ygzMatrix<T> &matrix, const T &scalar)
 {
     T* result = new T[matrix.nElements];
-    for (size_t i = 0; i < matrix.nElements; i++)
+    for (uint i = 0; i < matrix.nElements; i++)
         result[i] = matrix.data[i] - scalar;
 
     ygzMatrix<T> resultMatrix(matrix.nRows, matrix.nCols, result);
@@ -1086,7 +1087,7 @@ template <class T>
 ygzMatrix<T> operator-(const T &scalar, const ygzMatrix<T> &matrix)
 {
     T* result = new T[matrix.nElements];
-    for (size_t i = 0; i < matrix.nElements; i++)
+    for (uint i = 0; i < matrix.nElements; i++)
         result[i] = scalar - matrix.data[i];
 
     ygzMatrix<T> resultMatrix(matrix.nRows, matrix.nCols, result);
@@ -1104,7 +1105,7 @@ ygzMatrix<T> operator*(const ygzMatrix<T> &lhs, const ygzMatrix<T> &rhs)
     int nRows = lhs.nRows;
     int nCols = rhs.nCols;
     T* result = new T[nRows * nCols]; // Resulting matrix has dimensions (lhs.nRows, rhs.nCols)
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         for (size_t j = 0; j < nCols; j++)
         {
@@ -1126,7 +1127,7 @@ template <class T>
 ygzMatrix<T> operator*(const ygzMatrix<T> &matrix, const T &scalar)
 {
     T* result = new T[matrix.nElements];
-    for (size_t i = 0; i < matrix.nElements; i++)
+    for (uint i = 0; i < matrix.nElements; i++)
         result[i] = matrix.data[i] * scalar;
 
     ygzMatrix<T> resultMatrix(matrix.nRows, matrix.nCols, result);
@@ -1161,7 +1162,7 @@ ygzMatrix<T> ygzMatrix<T>::join(const ygzMatrix<T> &m)
         throw std::invalid_argument("Matrices must have the same number of rows");
 
     T* newData = new T[nRows * (nCols + m.nCols)];
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         for (size_t j = 0; j < (nCols + m.nCols); j++)
         {
@@ -1188,7 +1189,7 @@ void ygzMatrix<T>::separate(ygzMatrix<T> *m1, ygzMatrix<T> *m2, int colNum) cons
     m1->resize(nRows, colNum);
     m2->resize(nRows, nCols - colNum);
 
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         for (size_t j = 0; j < colNum; j++)
             m1->setElement(i, j, getElement(i, j));
@@ -1237,7 +1238,7 @@ int ygzMatrix<T>::findRowWithMax(int col, int startingRow) const
 {
     T max = getElement(startingRow, col);
     int rowIndex = startingRow;
-    for (size_t i = startingRow + 1; i < nRows; i++)
+    for (uint i = startingRow + 1; i < nRows; i++)
     {
         T val = getElement(i, col);
         if (val > max)
@@ -1312,7 +1313,7 @@ bool ygzMatrix<T>::inverseInPlace()
         {
             complete = true;
             // res is now the inverse of the original matrix
-            for (size_t i = 0; i < nRows; i++)
+            for (uint i = 0; i < nRows; i++)
             {
                 for (size_t j = 0; j < nCols; j++)
                     setElement(i, j, res->getElement(i, j));
@@ -1341,7 +1342,7 @@ ygzMatrix<T> ygzMatrix<T>::findMinor(int row, int col) const
 {
     T* minorData = new T[(nRows - 1) * (nCols - 1)];
     int minorIndex = 0;
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         if (i == row)
             continue;
@@ -1370,7 +1371,7 @@ T ygzMatrix<T>::determinant() const
         return getElement(0, 0) * getElement(1, 1) - getElement(0, 1) * getElement(1, 0);
 
     T det = 0;
-    for (size_t i = 0; i < nCols; i++)
+    for (uint i = 0; i < nCols; i++)
     {
         ygzMatrix<T> minor = findMinor(0, i);
         det += (i % 2 == 0 ? 1 : -1) * getElement(0, i) * minor.determinant();
@@ -1386,7 +1387,7 @@ template <class T>
 bool ygzMatrix<T>::transposeInPlace()
 {
     T* newData = new T[nElements];
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         for (size_t j = 0; j < nCols; j++)
             newData[j * nRows + i] = getElement(i, j);
@@ -1404,7 +1405,7 @@ template <class T>
 ygzMatrix<T> ygzMatrix<T>::transpose() const
 {
     T* newData = new T[nElements];
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         for (size_t j = 0; j < nCols; j++)
             newData[j * nRows + i] = getElement(i, j);
@@ -1425,7 +1426,7 @@ ygzVector<T> operator*(const ygzMatrix<T> &matrix, const ygzVector<T> &vector)
         throw std::invalid_argument("Number of columns in the matrix must be equal to the number of dimensions in the vector");
 
     T* result = new T[matrix.nRows];
-    for (size_t i = 0; i < matrix.nRows; i++)
+    for (uint i = 0; i < matrix.nRows; i++)
     {
         result[i] = 0;
         for (size_t j = 0; j < matrix.nCols; j++)
@@ -1445,7 +1446,7 @@ ygzMatrix<T> operator*(const ygzVector<T> &vector, const ygzMatrix<T> &r_vector)
         throw std::invalid_argument("The right matrix must be a row vector");
     
     T* result = new T[vector.getNumDims() * r_vector.getNumCols()];
-    for (size_t i = 0; i < vector.getNumDims(); i++)
+    for (uint i = 0; i < vector.getNumDims(); i++)
     {
         for (size_t j = 0; j < r_vector.getNumCols(); j++)
             result[i * r_vector.getNumCols() + j] = vector.getElement(i) * r_vector.getElement(0, j);
@@ -1467,7 +1468,7 @@ ygzMatrix<T> ygzMatrix<T>::hadamardProduct(const ygzMatrix<T> &lhs, ygzMatrix<T>
         throw std::invalid_argument("Matrices must have the same dimensions");
 
     T* result = new T[lhs.nElements];
-    for (size_t i = 0; i < lhs.nElements; i++)
+    for (uint i = 0; i < lhs.nElements; i++)
         result[i] = lhs.data[i] * rhs.data[i];
 
     ygzMatrix<T> resultMatrix(lhs.nRows, lhs.nCols, result);
@@ -1483,7 +1484,7 @@ template <class T>
 std::string ygzMatrix<T>::toString() const
 {
     std::string result = "[";
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         result += "[";
         for (size_t j = 0; j < nCols; j++)
@@ -1505,7 +1506,7 @@ template <class T>
 std::string ygzMatrix<T>::toCSV() const
 {
     std::string result = "";
-    for (size_t i = 0; i < nRows; i++)
+    for (uint i = 0; i < nRows; i++)
     {
         for (size_t j = 0; j < nCols; j++)
         {
